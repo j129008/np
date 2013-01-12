@@ -1,0 +1,31 @@
+這次的作業要寫六份code，而且要用到estinet來debug，因此花的時間是上次作業的好幾倍...
+我的實作方法是stop and wait，server當receiver，client當sende
+
+server:
+   如果收到資料，回傳ack
+client:
+   傳送資料，如果收到ack，傳下一個資料，等待1秒沒收到ack管他是drop||delay直接重傳資料
+
+這麼做的好處是server完全不用考慮timeout問題，code可以少寫很多(只要寫一個版本就好)
+缺點是浪費頻寬而且很慢，在丟ack的情況下server明明就已經收到資料卻要重傳
+改進的方法有直接多傳幾個ack回去(反正ack很小沒關係)或者是ack也來timeout重傳
+如果可能的話，一次傳送/接收 packet/ack 也會快很多，總之以後太閒再把它改強一點....
+
+
+
+三種timeout方法:
+
+alarm:
+   如果recv停太久會直接跳到設定的function裡，不過我不知道siginterrupt的flag為什麼
+   用0會出問題，照理說0應該是直接洗掉之前的狀態重來應該是對的。總之按照助教公告
+   的使用flag=1就沒問題了....
+
+select:
+   select裡有個設定時間的選項，如果set裡面沒有可I/O的socket超過某個時間直接return -1
+
+setsockopt:
+   設定某個socket多久沒收到東西直接讓recv()直接return
+
+
+題外話:
+   VM裡面雖然有限制sudo的權限，但是還是可以sudo編輯sudoers，有漏洞(?)
