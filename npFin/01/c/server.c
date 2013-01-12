@@ -54,23 +54,25 @@ int main(int argc, char *argv[]){
       // get data
       memset(packet.buf,'\0',bufsize);
       memset(retBuf,'\0',bufsize);
-
-      // set sockopt to SO_RCVTIMEO
+      // set sockopt use SO_RCVTIMEO
+      
+      // get string A
       timeval.tv_sec=500;
       timeval.tv_usec=0;
       setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeval,sizeof(timeval));
       recvfrom(sock,&packet,sizeof(packet),0,(struct sockaddr*)&senderinfo,&addrlen);
-      printf("\nstring1:%s\n",packet.buf);
+      printf("\nstringA:%s\n",packet.buf);
       rmnewline(packet.buf);
 
       strcat(retBuf,packet.buf);
       memset(packet.buf,'\0',bufsize);
       
+      // wait 5 secs to get string B, else string B is null
       timeval.tv_sec=5;
       timeval.tv_usec=0;
       setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeval,sizeof(timeval));
       recvfrom(sock,&packet,sizeof(packet),0,(struct sockaddr*)&senderinfo,&addrlen);
-      printf("string2:%s\n",packet.buf);
+      printf("stringB:%s\n",packet.buf);
       strcat(retBuf,packet.buf);
 
       printf("\nret string:%s",retBuf);

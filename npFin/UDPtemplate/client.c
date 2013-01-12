@@ -16,9 +16,6 @@ int sock;
 struct sockaddr_in addr;
 FILE *fp;
 socklen_t addrlen;
-fd_set rset, allset;
-struct timeval timeval;
-int maxfd;
 
 struct ack{
    int num;
@@ -33,7 +30,6 @@ struct packet{
 }packet;
 
 
-
 int main(int argc, char *argv[]){
    addrlen=sizeof(addr);
    
@@ -46,7 +42,6 @@ int main(int argc, char *argv[]){
    //creat UDP socket
    int ret=0;
    sock = socket(AF_INET, SOCK_DGRAM, 0);
-   maxfd = sock;
    addr.sin_family = AF_INET;
    addr.sin_port = htons(atoi(argv[2]));
    ret=inet_pton(AF_INET, argv[1], &addr.sin_addr.s_addr);
@@ -56,30 +51,16 @@ int main(int argc, char *argv[]){
    }
 
    // read file
-   FD_ZERO(&allset);
-   FD_SET(fileno(stdin) , &allset );
-   FD_SET( sock , &allset );
    memset(packet.buf,'\0',bufsize);
-
-   while(1){
-      rset=allset;
-      timeval.tv_usec=0;
-      timeval.tv_sec=0;
-      select( maxfd + 1 , &rset , NULL , NULL , &timeval );
-    
-      if(FD_ISSET(fileno(stdin),&rset)){
-         int n=read(fileno(stdin), packet.buf,bufsize);
-         if (n == 0) exit(0);
-         n = sendto(sock,&packet,sizeof(packet), 0, (struct sockaddr *)&addr,sizeof(addr));
-         if (n < 1) perror("sendto");
-         memset(packet.buf,'\0',bufsize);
-      }
-      
-      if(FD_ISSET(sock,&rset)){
-         recvfrom(sock,&packet,sizeof(packet),0,(struct sockaddr*)&addr,&addrlen);
-         printf("[server] %s\n",packet.buf);
-         memset(packet.buf,'\0',bufsize);
-      }
+   packet.end='0';
+   packet.num=0;
+   while( fgets(packet.buf,bufsize,stdin) ){
+      // send packet
+      packet.num++;
+      int n = sendto(sock,&packet,sizeof(packet), 0, (struct sockaddr *)&addr,sizeof(addr));
+      if (n < 1) perror("sendto");
+      printf("client: send packet num: %d, string: %s\n",packet.num, packet.buf);
+      memset(packet.buf,'\0',bufsize);
    }
 
    //close socket
