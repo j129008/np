@@ -19,16 +19,22 @@ void myClient(char ** argv ){
    connfd1 = myTcpConnect(argv,atoi(argv[2]));
    rmnewline(buf);
    strcat(buf,"I");
+   ioctlVal=1;
+   ioctl(connfd1,FIONBIO,&ioctlVal);
    mywrite(connfd1,buf);
    
    connfd2 = myTcpConnect(argv,atoi(argv[3]));
    rmnewline(buf);
    strcat(buf,"I");
+   ioctlVal=1;
+   ioctl(connfd2,FIONBIO,&ioctlVal);
    mywrite(connfd2,buf);
    
    connfd3 = myTcpConnect(argv,atoi(argv[4]));
    rmnewline(buf);
    strcat(buf,"I");
+   ioctlVal=1;
+   ioctl(connfd3,FIONBIO,&ioctlVal);
    mywrite(connfd3,buf);
    
    
