@@ -14,17 +14,16 @@
 
 #define	HOSTNAMELEN	40	/* maximal host name length */
 
-void myClient(int connfd);
+void myClient(char **);
 
 
 int main(int argc, char *argv[]){
-  if (argc < 3) {
-    fprintf(stderr, "Missing host name or port\n");
+  if (argc < 5) {
+    fprintf(stderr, "<host> <port> <port><port>\n");
     exit (1);
   }
 
-  int connfd = myTcpConnect(argv,atoi(argv[2]));
-  myClient(connfd);
+  myClient(argv);
   return 0;
 }
 

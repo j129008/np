@@ -9,6 +9,7 @@ void myServer( int listenfd ){
 
    // get file name
    read(connfd, buf, BUFLEN);
+   printf("file name:%s\n",buf);
    fp = fopen(buf,"w");
    
    // write file

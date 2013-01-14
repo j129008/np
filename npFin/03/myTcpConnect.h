@@ -17,7 +17,12 @@ int myTcpConnect(char** argv, int port){
    if (sockfd < 0) {
       perror("socket: allocation failed");
    }
+   // non blocking
    int  rc = connect_nonb(sockfd, (struct sockaddr *)&sa, sizeof(sa),1);
+   
+   // blocking ver.
+   // int  rc = connect(sockfd, (struct sockaddr *)&sa, sizeof(sa));
+   
    if (rc) {
       perror("connect");
    }
